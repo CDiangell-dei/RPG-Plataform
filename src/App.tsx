@@ -197,7 +197,7 @@ function App() {
     setAuthLoading(true);
     setAuthError(null);
 
-    const fakeEmail = `${authUsername.trim().toLowerCase()}@bellum.com`;
+    const fakeEmail = `${authUsername.trim().toLowerCase().replace(/\s+/g, '')}@bellum.com`;
 
     try {
       if (isSignUp) {
@@ -206,7 +206,6 @@ function App() {
           password: authPassword
         });
         if (error) throw error;
-        alert('Cadastro realizado! Verifique se seu login automático funcionou ou tente entrar.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: fakeEmail,

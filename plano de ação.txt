@@ -1,0 +1,37 @@
+
+Plano de Implementação: Plataforma RPG - Bellum Egrégora
+Este plano detalha a construção da sua plataforma web para o RPG Bellum Egrégora: O Flagelo de Metus, que une as regras base de Ordem Paranormal com elementos de Tormenta 20 e Sobrevivendo ao Horror em um cenário medieval sombrio.
+
+IMPORTANT
+
+Revisão Necessária
+Como agora sabemos a temática (Medieval Sombrio / Fantasia Escura) e as bases do sistema, estruturei como será a interface e o banco de dados. Por favor, revise as escolhas abaixo e clique em Proceed/Aprovar se estiver de acordo para começarmos a programar!
+
+1. Design e Estética (Frontend)
+Framework: React (Vite) + CSS Puro.
+Tema Visual: Dark Fantasy / Medieval Sombrio.
+Paleta de cores: Tons de cinza escuro, carvão, detalhes em vermelho sangue (representando o pavor/monstros) e dourado/cobre envelhecido (aço/armas).
+UI: Elementos que remetem a pergaminhos escurecidos, painéis com glassmorphism fosco para dar um ar moderno mas sombrio, e tipografia gótica/serifada moderna para títulos (ex: Cinzel ou Playfair Display) e legível para textos (ex: Inter).
+2. Estrutura do Banco de Dados (Supabase)
+O banco de dados já está provisionado e conectado. Vamos criar as seguintes tabelas iniciais usando SQL:
+
+Tabela characters (Fichas de Personagem)
+Como o sistema mescla Ordem Paranormal e Tormenta 20, a ficha precisará suportar as bases de Ordem com a flexibilidade medieval de Tormenta:
+
+id (UUID)
+user_id (Relacionamento com o usuário)
+name, origin (Origem Nova), class, level
+Atributos Base (Ordem): agility, intellect, vigor, presence, strength
+Status e Recursos: hp (Vida), sp (Sanidade - se aplicável no seu mundo), mp (Mana/PE)
+Dinheiro/Equipamentos: Suporte para o novo "Sistema de Dinheiro" do seu homebrew.
+inventory (JSONB para flexibilidade de itens medievais)
+skills (JSONB para as perícias de Tormenta/Ordem)
+Tabela campaigns & homebrew_content
+Para gerenciar as sessões, jogadores e as regras adicionais que você escreveu no Google Docs.
+3. Próximos Passos (Plano de Execução)
+Setup do Estilo: Criar o arquivo index.css com a paleta de cores Dark Fantasy e variáveis CSS.
+Componentes Base: Criar botões, inputs e painéis temáticos para o site.
+Página de Ficha: Construir o layout visual da Ficha de Personagem (Character Sheet) onde você poderá testar a interface.
+Banco de Dados: Rodar as migrações SQL no Supabase para criar a tabela de personagens e conectar o frontend para salvar os dados.
+Perguntas em Aberto
+A lista de atributos será a clássica de Ordem Paranormal (AGI, INT, VIG, PRE, FOR) ou usará o padrão Tormenta20 (FOR, DES, CON, INT, SAB, CAR)? Assumi Ordem Paranormal por enquanto, me corrija se eu estiver errado!

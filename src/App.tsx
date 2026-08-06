@@ -69,7 +69,7 @@ interface DbLog {
 
 function App() {
   const [session, setSession] = useState<any>(null);
-  const [authEmail, setAuthEmail] = useState('');
+  const [authUsername, setAuthUsername] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -197,17 +197,19 @@ function App() {
     setAuthLoading(true);
     setAuthError(null);
 
+    const fakeEmail = `${authUsername.trim().toLowerCase()}@bellum.com`;
+
     try {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
-          email: authEmail,
+          email: fakeEmail,
           password: authPassword
         });
         if (error) throw error;
-        alert('Cadastro realizado! Verifique seu e-mail para confirmar a conta.');
+        alert('Cadastro realizado! Verifique se seu login automático funcionou ou tente entrar.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: authEmail,
+          email: fakeEmail,
           password: authPassword
         });
         if (error) throw error;
@@ -608,12 +610,12 @@ function App() {
             </h2>
             <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '5px', textAlign: 'left' }}>E-mail de Agente</label>
+                <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '5px', textAlign: 'left' }}>Nome de Usuário</label>
                 <input 
-                  type="email" 
+                  type="text" 
                   className="input-field" 
-                  value={authEmail} 
-                  onChange={(e) => setAuthEmail(e.target.value)} 
+                  value={authUsername} 
+                  onChange={(e) => setAuthUsername(e.target.value)} 
                   required 
                 />
               </div>
@@ -651,7 +653,7 @@ function App() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <div style={{ textAlign: 'left' }}>
                 <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Agente Autenticado:</span>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{session.user.email}</p>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{session.user.email?.replace('@bellum.com', '')}</p>
               </div>
               {activeChar && (
                 <div style={{ borderLeft: '1px solid var(--border-muted)', paddingLeft: '15px', textAlign: 'left' }}>

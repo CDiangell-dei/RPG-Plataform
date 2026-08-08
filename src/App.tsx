@@ -8,7 +8,9 @@ import {
   rollOrdemTest, 
   DICE_LOG_ACTIONS 
 } from './rules/rulesData';
-
+import { WEAPONS, ARMORS } from './rules/itemsData';
+import { RITUALS } from './rules/ritualsData';
+import { POWERS } from './rules/powersData';
 // Types
 interface InventoryItem {
   id: string;
@@ -283,6 +285,26 @@ function App() {
       console.error('Erro ao forjar personagem:', err.message);
     } finally {
       setLoadingChars(false);
+    }
+  };
+  // Delete character
+  const deleteCharacter = async (charId: string) => {
+    if (!window.confirm('Tem certeza que deseja APAGAR esta ficha para sempre? Esta ação não pode ser desfeita.')) return;
+    try {
+      const { error } = await supabase
+        .from('characters')
+        .delete()
+        .eq('id', charId);
+
+      if (error) throw error;
+      
+      setCharacters(prev => prev.filter(c => c.id !== charId));
+      if (activeChar?.id === charId) {
+        setActiveChar(null);
+      }
+    } catch (err: any) {
+      console.error('Erro ao apagar ficha:', err.message);
+      alert('Erro ao apagar a ficha.');
     }
   };
 
@@ -596,6 +618,50 @@ function App() {
             <p>• <strong>Surto de Adrenalina:</strong> Gaste PE igual ao seu nível e ganhe 1 Ação Padrão extra (não aplicável para Ocultistas lançando rituais).</p>
             <p>• <strong>Contra-Ataque de Oportunidade:</strong> Se esquivar e o inimigo errar, gaste 2 PE para atacar com metade do dano como Reação.</p>
             <p>• <strong>Defesa Fortuita (Defletir):</strong> Gaste 2 PE para disputar 1d20+Força contra a jogada do atacante e defletir seu golpe usando um escudo.</p>
+
+            <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-glow)', margin: '20px 0 8px', color: '#ff3333' }}>Armas Adaptadas (Tormenta)</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              {WEAPONS.map(w => (
+                <div key={w.id} style={{ background: 'rgba(0,0,0,0.4)', padding: '8px', border: '1px solid #333', borderRadius: '4px' }}>
+                  <strong>{w.name}</strong> ({w.weaponType} / {w.category})<br/>
+                  <span style={{ fontSize: '12px', color: '#ccc' }}>Dano: {w.damage} | Crítico: {w.critical} | {w.damageType}</span><br/>
+                  <span style={{ fontSize: '11px', fontStyle: 'italic' }}>{w.description}</span>
+                </div>
+              ))}
+            </div>
+
+            <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-glow)', margin: '20px 0 8px', color: '#ddaa33' }}>Armaduras e Escudos</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              {ARMORS.map(a => (
+                <div key={a.id} style={{ background: 'rgba(0,0,0,0.4)', padding: '8px', border: '1px solid #333', borderRadius: '4px' }}>
+                  <strong>{a.name}</strong> ({a.armorType} / {a.category})<br/>
+                  <span style={{ fontSize: '12px', color: '#ccc' }}>Defesa: +{a.defenseBonus} | Penalidade: {a.penalty}</span><br/>
+                  <span style={{ fontSize: '11px', fontStyle: 'italic' }}>{a.description}</span>
+                </div>
+              ))}
+            </div>
+
+            <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-glow)', margin: '20px 0 8px', color: '#33ff33' }}>Rituais e Magias Adaptados</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              {RITUALS.map(r => (
+                <div key={r.id} style={{ background: 'rgba(0,0,0,0.4)', padding: '8px', border: '1px solid #333', borderRadius: '4px' }}>
+                  <strong>{r.name}</strong> <span style={{ color: r.element === 'Sangue' ? '#f55' : r.element === 'Morte' ? '#888' : r.element === 'Conhecimento' ? '#dd5' : '#5df' }}>({r.element})</span><br/>
+                  <span style={{ fontSize: '12px', color: '#ccc' }}>Custo: {r.cost} PE | Exec.: {r.execution} | Alcance: {r.range}</span><br/>
+                  <span style={{ fontSize: '11px', fontStyle: 'italic' }}>{r.description}</span>
+                </div>
+              ))}
+            </div>
+
+            <h3 style={{ fontSize: '18px', borderBottom: '1px solid var(--border-glow)', margin: '20px 0 8px', color: '#5555ff' }}>Poderes Místicos e Marciais</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              {POWERS.map(p => (
+                <div key={p.id} style={{ background: 'rgba(0,0,0,0.4)', padding: '8px', border: '1px solid #333', borderRadius: '4px' }}>
+                  <strong>{p.name}</strong> ({p.type})<br/>
+                  {p.prerequisites && <span style={{ fontSize: '11px', color: '#f80' }}>Pré-requisito: {p.prerequisites}<br/></span>}
+                  <span style={{ fontSize: '11px', fontStyle: 'italic' }}>{p.description}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -664,14 +730,23 @@ function App() {
 
             <div style={{ display: 'flex', gap: '10px' }}>
               {activeChar && (
-                <button 
-                  className="btn-primary" 
-                  style={{ background: 'linear-gradient(135deg, #2e8b57 0%, #1e5c38 100%)', borderColor: '#2e8b57' }}
-                  onClick={() => saveCharacter(activeChar)}
-                  disabled={savingChar}
-                >
-                  {savingChar ? 'Salva nas Brumas...' : 'Gravar Ficha'}
-                </button>
+                <>
+                  <button 
+                    className="btn-primary" 
+                    style={{ background: 'linear-gradient(135deg, #2e8b57 0%, #1e5c38 100%)', borderColor: '#2e8b57' }}
+                    onClick={() => saveCharacter(activeChar)}
+                    disabled={savingChar}
+                  >
+                    {savingChar ? 'Salva nas Brumas...' : 'Gravar Ficha'}
+                  </button>
+                  <button 
+                    className="btn-primary" 
+                    style={{ background: 'linear-gradient(135deg, #8b2e2e 0%, #5c1e1e 100%)', borderColor: '#8b2e2e' }}
+                    onClick={() => deleteCharacter(activeChar.id)}
+                  >
+                    Apagar Ficha
+                  </button>
+                </>
               )}
               <button className="btn-primary" onClick={createCharacter} disabled={loadingChars}>
                 Forjar Nova Ficha

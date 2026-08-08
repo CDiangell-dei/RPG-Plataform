@@ -1,0 +1,63 @@
+{
+  "total_count": 2,
+  "jobs": [
+    {
+      "id": 92508768315,
+      "run_id": 31067679496,
+      "workflow_name": "Deploy to GitHub Pages",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/CDiangell-dei/RPG-Plataform/actions/runs/31067679496",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTvQL9M8AAAAVifPIOw",
+      "head_sha": "b852f3461fa104a3bddaefd1a3ff4ad413ebe6cf",
+      "url": "https://api.github.com/repos/CDiangell-dei/RPG-Plataform/actions/jobs/92508768315",
+      "html_url": "https://github.com/CDiangell-dei/RPG-Plataform/actions/runs/31067679496/job/92508768315",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-08-06T03:10:07Z",
+      "started_at": "2026-08-06T03:10:07Z",
+      "completed_at": "2026-08-06T03:10:11Z",
+      "name": "build",
+      "steps": [
+
+      ],
+      "check_run_url": "https://api.github.com/repos/CDiangell-dei/RPG-Plataform/check-runs/92508768315",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": ""
+    },
+    {
+      "id": 92508779493,
+      "run_id": 31067679496,
+      "workflow_name": "Deploy to GitHub Pages",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/CDiangell-dei/RPG-Plataform/actions/runs/31067679496",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTvQL9M8AAAAVifPz5Q",
+      "head_sha": "b852f3461fa104a3bddaefd1a3ff4ad413ebe6cf",
+      "url": "https://api.github.com/repos/CDiangell-dei/RPG-Plataform/actions/jobs/92508779493",
+      "html_url": "https://github.com/CDiangell-dei/RPG-Plataform/actions/runs/31067679496/job/92508779493",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-08-06T03:10:11Z",
+      "started_at": "2026-08-06T03:10:11Z",
+      "completed_at": "2026-08-06T03:10:11Z",
+      "name": "deploy",
+      "steps": [
+
+      ],
+      "check_run_url": "https://api.github.com/repos/CDiangell-dei/RPG-Plataform/check-runs/92508779493",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    }
+  ]
+}

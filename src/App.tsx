@@ -947,23 +947,23 @@ function App() {
                     </div>
                     <div style={{ textAlign: 'left' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '5px' }}>Origem</label>
-                      <input 
-                        type="text"
-                        className="input-field"
-                        value={activeChar.origin}
-                        readOnly
-                        disabled
-                      />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        {activeChar.origin.split(' / ').map((orig, i) => (
+                          <div key={i} style={{ background: 'rgba(218, 165, 32, 0.1)', border: '1px solid var(--accent-gold)', color: 'var(--accent-gold)', padding: '5px 10px', borderRadius: '5px', fontSize: '12px', fontWeight: 'bold' }}>
+                            {orig}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                     <div style={{ textAlign: 'left' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '5px' }}>Classe</label>
-                      <input 
-                        type="text"
-                        className="input-field"
-                        value={activeChar.class}
-                        readOnly
-                        disabled
-                      />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        {activeChar.class.split(' / ').map((cls, i) => (
+                          <div key={i} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid #555', color: 'var(--text-primary)', padding: '5px 10px', borderRadius: '5px', fontSize: '12px', fontWeight: 'bold' }}>
+                            {cls}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div style={{ textAlign: 'left' }}>

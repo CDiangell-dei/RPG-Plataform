@@ -242,7 +242,9 @@ function App() {
     setAuthLoading(true);
     setAuthError(null);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(authEmail);
+      const { error } = await supabase.auth.resetPasswordForEmail(authEmail, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
       if (error) throw error;
       alert('Se o e-mail existir, um link de recuperação foi enviado para sua caixa de entrada!');
     } catch (err: any) {

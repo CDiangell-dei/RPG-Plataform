@@ -80,6 +80,7 @@ function App() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
   const [recoveryPassword, setRecoveryPassword] = useState('');
+  const [authUsername, setAuthUsername] = useState('');
 
   const [characters, setCharacters] = useState<Character[]>([]);
   const [activeChar, setActiveChar] = useState<Character | null>(null);
@@ -213,7 +214,12 @@ function App() {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
           email: authEmail,
-          password: authPassword
+          password: authPassword,
+          options: {
+            data: {
+              username: authUsername || authEmail.split('@')[0]
+            }
+          }
         });
         if (error) throw error;
       } else {
@@ -732,6 +738,19 @@ function App() {
                   {isSignUp ? 'Registrar na Seita' : 'Entrar no Egrégora'}
                 </h2>
                 <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {isSignUp && (
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '5px', textAlign: 'left' }}>Nome de Usuário (Apelido)</label>
+                      <input 
+                        type="text" 
+                        className="input-field" 
+                        placeholder="Ex: CDiangell-dei"
+                        value={authUsername} 
+                        onChange={(e) => setAuthUsername(e.target.value)} 
+                        required={isSignUp}
+                      />
+                    </div>
+                  )}
                   <div>
                 <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '5px', textAlign: 'left' }}>E-mail</label>
                 <input 
@@ -789,7 +808,9 @@ function App() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <div style={{ textAlign: 'left' }}>
                 <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Agente Autenticado:</span>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{session.user.email?.replace('@bellum.com', '')}</p>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--text-primary)' }}>
+                  {session.user.user_metadata?.username || session.user.email}
+                </p>
               </div>
               {activeChar && (
                 <div style={{ borderLeft: '1px solid var(--border-muted)', paddingLeft: '15px', textAlign: 'left' }}>

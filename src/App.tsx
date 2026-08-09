@@ -229,6 +229,24 @@ function App() {
     await supabase.auth.signOut();
   };
 
+  const handleResetPassword = async () => {
+    if (!authEmail) {
+      setAuthError('Digite seu e-mail acima para recuperar a senha.');
+      return;
+    }
+    setAuthLoading(true);
+    setAuthError(null);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(authEmail);
+      if (error) throw error;
+      alert('Se o e-mail existir, um link de recuperação foi enviado para sua caixa de entrada!');
+    } catch (err: any) {
+      setAuthError(err.message || 'Erro ao enviar e-mail de recuperação.');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
   const createCharacter = () => {
     setShowCreator(true);
   };
@@ -680,6 +698,16 @@ function App() {
               <button type="submit" className="btn-primary" style={{ marginTop: '10px' }} disabled={authLoading}>
                 {authLoading ? 'Verificando...' : isSignUp ? 'Registrar' : 'Entrar'}
               </button>
+              {!isSignUp && (
+                <p style={{ margin: 0, textAlign: 'center' }}>
+                  <span 
+                    style={{ color: 'var(--text-muted)', fontSize: '11px', cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={handleResetPassword}
+                  >
+                    Esqueci a senha
+                  </span>
+                </p>
+              )}
             </form>
             <p style={{ marginTop: '20px', fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>
               {isSignUp ? 'Já faz parte do círculo?' : 'Primeira missão?'} {' '}

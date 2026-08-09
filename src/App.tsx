@@ -948,36 +948,28 @@ function App() {
                             }} 
                           />
                         </div>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <input 
-                            type="number" 
-                            className="input-field" 
-                            style={{ padding: '4px 8px', fontSize: '12px', width: '70px' }}
-                            value={activeChar.hp_current}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.max(0, activeChar.hp_current - 1);
                               updateActiveChar({ hp_current: val });
-                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `HP alterado de ${activeChar.hp_current} para ${val} (Manual).`);
-                            }}
-                          />
-                          <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Atual</span>
-                          <div 
-                            style={{ 
-                              padding: '4px 8px', 
-                              fontSize: '14px', 
-                              width: '70px', 
-                              marginLeft: 'auto',
-                              background: 'rgba(0,0,0,0.3)',
-                              border: '1px solid #333',
-                              borderRadius: '4px',
-                              textAlign: 'center',
-                              fontWeight: 'bold',
-                              color: '#ddd'
-                            }}
-                          >
-                            {activeChar.hp_max}
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `HP reduzido para ${val}.`);
+                            }}>-</button>
+                            <div style={{ padding: '4px 12px', fontSize: '14px', background: 'rgba(0,0,0,0.3)', border: '1px solid #333', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', color: '#fff', minWidth: '40px' }}>
+                              {activeChar.hp_current}
+                            </div>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.min(activeChar.hp_max, activeChar.hp_current + 1);
+                              updateActiveChar({ hp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `HP aumentado para ${val}.`);
+                            }}>+</button>
                           </div>
-                          <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
+                            <div style={{ padding: '4px 12px', fontSize: '14px', background: 'rgba(0,0,0,0.3)', border: '1px solid #333', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', color: '#ddd', minWidth: '40px' }}>
+                              {activeChar.hp_max}
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -997,36 +989,28 @@ function App() {
                             }} 
                           />
                         </div>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <input 
-                            type="number" 
-                            className="input-field" 
-                            style={{ padding: '4px 8px', fontSize: '12px', width: '70px' }}
-                            value={activeChar.sp_current}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.max(0, activeChar.sp_current - 1);
                               updateActiveChar({ sp_current: val });
-                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `Sanidade (SP) alterada de ${activeChar.sp_current} para ${val} (Manual).`);
-                            }}
-                          />
-                          <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Atual</span>
-                          <div 
-                            style={{ 
-                              padding: '4px 8px', 
-                              fontSize: '14px', 
-                              width: '70px', 
-                              marginLeft: 'auto',
-                              background: 'rgba(0,0,0,0.3)',
-                              border: '1px solid #333',
-                              borderRadius: '4px',
-                              textAlign: 'center',
-                              fontWeight: 'bold',
-                              color: '#ddd'
-                            }}
-                          >
-                            {activeChar.sp_max}
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `SP reduzido para ${val}.`);
+                            }}>-</button>
+                            <div style={{ padding: '4px 12px', fontSize: '14px', background: 'rgba(0,0,0,0.3)', border: '1px solid #333', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', color: '#fff', minWidth: '40px' }}>
+                              {activeChar.sp_current}
+                            </div>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.min(activeChar.sp_max, activeChar.sp_current + 1);
+                              updateActiveChar({ sp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `SP aumentado para ${val}.`);
+                            }}>+</button>
                           </div>
-                          <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
+                            <div style={{ padding: '4px 12px', fontSize: '14px', background: 'rgba(0,0,0,0.3)', border: '1px solid #333', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', color: '#ddd', minWidth: '40px' }}>
+                              {activeChar.sp_max}
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -1046,36 +1030,28 @@ function App() {
                             }} 
                           />
                         </div>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <input 
-                            type="number" 
-                            className="input-field" 
-                            style={{ padding: '4px 8px', fontSize: '12px', width: '70px' }}
-                            value={activeChar.mp_current}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.max(0, activeChar.mp_current - 1);
                               updateActiveChar({ mp_current: val });
-                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `Mana/PE alterado de ${activeChar.mp_current} para ${val} (Manual).`);
-                            }}
-                          />
-                          <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Atual</span>
-                          <div 
-                            style={{ 
-                              padding: '4px 8px', 
-                              fontSize: '14px', 
-                              width: '70px', 
-                              marginLeft: 'auto',
-                              background: 'rgba(0,0,0,0.3)',
-                              border: '1px solid #333',
-                              borderRadius: '4px',
-                              textAlign: 'center',
-                              fontWeight: 'bold',
-                              color: '#ddd'
-                            }}
-                          >
-                            {activeChar.mp_max}
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `PE reduzido para ${val}.`);
+                            }}>-</button>
+                            <div style={{ padding: '4px 12px', fontSize: '14px', background: 'rgba(0,0,0,0.3)', border: '1px solid #333', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', color: '#fff', minWidth: '40px' }}>
+                              {activeChar.mp_current}
+                            </div>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.min(activeChar.mp_max, activeChar.mp_current + 1);
+                              updateActiveChar({ mp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `PE aumentado para ${val}.`);
+                            }}>+</button>
                           </div>
-                          <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
+                            <div style={{ padding: '4px 12px', fontSize: '14px', background: 'rgba(0,0,0,0.3)', border: '1px solid #333', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', color: '#ddd', minWidth: '40px' }}>
+                              {activeChar.mp_max}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

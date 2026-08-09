@@ -12,6 +12,7 @@ import { WEAPONS, ARMORS } from './rules/itemsData';
 import { RITUALS } from './rules/ritualsData';
 import { POWERS } from './rules/powersData';
 import { CharacterCreator } from './components/CharacterCreator';
+import { AttributesModal } from './components/AttributesModal';
 
 // Types
 interface InventoryItem {
@@ -32,6 +33,15 @@ interface RitualData {
   element: 'Sangue' | 'Morte' | 'Conhecimento' | 'Energia' | 'Medo';
   cost: number; // Cost in SP
   desc: string;
+}
+
+export interface Modifier {
+  id: string;
+  name: string;
+  target: 'hp_max' | 'sp_max' | 'mp_max' | 'agility' | 'intellect' | 'vigor' | 'presence' | 'strength';
+  type: 'flat' | 'per_level' | 'per_odd_level' | 'per_even_level';
+  value: number;
+  isActive: boolean;
 }
 
 export interface Character {
@@ -61,6 +71,7 @@ export interface Character {
   inventory: InventoryItem[];
   skills: SkillData[];
   rituals: RitualData[];
+  modifiers: Modifier[];
   notes: string;
 }
 
@@ -70,6 +81,21 @@ interface DbLog {
   action_type: string;
   description: string;
 }
+
+export const getEffectiveAttribute = (char: Character, attrName: 'agility' | 'intellect' | 'vigor' | 'presence' | 'strength') => {
+  const baseValue = char[attrName];
+  if (!char.modifiers) return baseValue;
+  
+  const activeMods = char.modifiers.filter(m => m.isActive && m.target === attrName);
+  let eff = baseValue;
+  activeMods.forEach(m => {
+    if (m.type === 'flat') eff += m.value;
+    else if (m.type === 'per_level') eff += (m.value * char.level);
+    else if (m.type === 'per_odd_level') eff += (m.value * Math.ceil(char.level / 2));
+    else if (m.type === 'per_even_level') eff += (m.value * Math.floor(char.level / 2));
+  });
+  return eff;
+};
 
 function App() {
   const [session, setSession] = useState<any>(null);
@@ -389,17 +415,32 @@ function App() {
     let updated = { ...activeChar, ...fields };
     
     // Auto-calculate derived stats if relevant fields changed
-    if (fields.vigor !== undefined || fields.presence !== undefined || fields.level !== undefined || fields.class !== undefined) {
+    if (fields.vigor !== undefined || fields.presence !== undefined || fields.level !== undefined || fields.class !== undefined || fields.modifiers !== undefined) {
       const classRules = CLASSES[updated.class];
       if (classRules) {
-        const vigor = updated.vigor;
-        const presence = updated.presence;
+        // Effective attributes
+        const effVigor = getEffectiveAttribute(updated as Character, 'vigor');
+        const effPresence = getEffectiveAttribute(updated as Character, 'presence');
         const level = updated.level;
         
         // Em Ordem Paranormal, Vigor e Presença multiplicam pelo nível para HP e PE.
-        const newHpMax = classRules.hpBase + (classRules.hpPerLevel * (level - 1)) + (vigor * level);
-        const newSpMax = classRules.spBase + (level - 1) * classRules.spPerLevel;
-        const newMpMax = classRules.mpBase + (classRules.mpPerLevel * (level - 1)) + (presence * level);
+        let newHpMax = classRules.hpBase + (classRules.hpPerLevel * (level - 1)) + (effVigor * level);
+        let newSpMax = classRules.spBase + (level - 1) * classRules.spPerLevel;
+        let newMpMax = classRules.mpBase + (classRules.mpPerLevel * (level - 1)) + (effPresence * level);
+
+        // Modificadores diretos de Recursos
+        const activeResourceMods = (updated.modifiers || []).filter(m => m.isActive && ['hp_max', 'sp_max', 'mp_max'].includes(m.target));
+        activeResourceMods.forEach(m => {
+          let bonus = 0;
+          if (m.type === 'flat') bonus = m.value;
+          else if (m.type === 'per_level') bonus = (m.value * level);
+          else if (m.type === 'per_odd_level') bonus = (m.value * Math.ceil(level / 2));
+          else if (m.type === 'per_even_level') bonus = (m.value * Math.floor(level / 2));
+
+          if (m.target === 'hp_max') newHpMax += bonus;
+          if (m.target === 'sp_max') newSpMax += bonus;
+          if (m.target === 'mp_max') newMpMax += bonus;
+        });
 
         updated = {
           ...updated,
@@ -446,7 +487,7 @@ function App() {
   // Roll d20 Attribute roll
   const triggerAttributeRoll = (attrKey: 'agility' | 'intellect' | 'vigor' | 'presence' | 'strength', name: string) => {
     if (!activeChar) return;
-    const val = activeChar[attrKey];
+    const val = getEffectiveAttribute(activeChar, attrKey);
     const { rolls, finalResult, notation } = rollOrdemTest(val, 0);
 
     setRollResult({
@@ -597,7 +638,7 @@ function App() {
   ) : 0;
 
   const totalWeight = coinSpaces + inventorySpaces;
-  const maxWeight = activeChar ? (5 + activeChar.strength) : 5;
+  const maxWeight = activeChar ? (5 + getEffectiveAttribute(activeChar, 'strength')) : 5;
 
   return (
     <div className="app-container">
@@ -860,37 +901,11 @@ function App() {
           )}
 
           {isEditingAttributes && activeChar && (
-            <div style={{
-              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-              background: 'rgba(0,0,0,0.85)',
-              display: 'flex', justifyContent: 'center', alignItems: 'center',
-              zIndex: 9999, backdropFilter: 'blur(5px)'
-            }}>
-              <div className="glass-panel" style={{ width: '400px', maxWidth: '90vw', padding: '30px' }}>
-                <h3 style={{ color: 'var(--accent-gold)', marginBottom: '20px' }}>Editar Atributos</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                  {[
-                    { key: 'agility', label: 'Agilidade' },
-                    { key: 'intellect', label: 'Intelecto' },
-                    { key: 'vigor', label: 'Vigor' },
-                    { key: 'presence', label: 'Presença' },
-                    { key: 'strength', label: 'Força' }
-                  ].map(attr => (
-                    <div key={attr.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '5px' }}>
-                      <strong>{attr.label}</strong>
-                      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                        <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => updateActiveChar({ [attr.key]: Math.max(0, (activeChar[attr.key as keyof Character] as number) - 1) })}>-</button>
-                        <span style={{ fontSize: '20px', fontWeight: 'bold', width: '20px', textAlign: 'center' }}>{activeChar[attr.key as keyof Character] as number}</span>
-                        <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => updateActiveChar({ [attr.key]: Math.min(10, (activeChar[attr.key as keyof Character] as number) + 1) })}>+</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: '30px', textAlign: 'right' }}>
-                  <button type="button" className="btn-primary" onClick={() => setIsEditingAttributes(false)}>Fechar</button>
-                </div>
-              </div>
-            </div>
+            <AttributesModal 
+              activeChar={activeChar}
+              updateActiveChar={updateActiveChar}
+              onClose={() => setIsEditingAttributes(false)}
+            />
           )}
 
           {/* MAIN COLUMN SYSTEM */}
@@ -1047,7 +1062,7 @@ function App() {
                           </span>
                           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px 0' }}>
                             <span style={{ fontSize: '28px', fontWeight: 'bold', fontFamily: 'var(--font-gothic)', color: 'var(--text-primary)' }}>
-                              {activeChar[key as keyof Character] as number}
+                              {getEffectiveAttribute(activeChar, key as any)}
                             </span>
                           </div>
                           <button 

@@ -346,10 +346,10 @@ function App() {
         const presence = updated.presence;
         const level = updated.level;
         
-        // Em Ordem Paranormal, Vigor adiciona na vida base.
-        const newHpMax = classRules.hpBase + vigor + (level - 1) * classRules.hpPerLevel;
+        // Em Ordem Paranormal, Vigor e Presença multiplicam pelo nível para HP e PE.
+        const newHpMax = classRules.hpBase + (classRules.hpPerLevel * (level - 1)) + (vigor * level);
         const newSpMax = classRules.spBase + (level - 1) * classRules.spPerLevel;
-        const newMpMax = classRules.mpBase + presence + (level - 1) * classRules.mpPerLevel;
+        const newMpMax = classRules.mpBase + (classRules.mpPerLevel * (level - 1)) + (presence * level);
 
         updated = {
           ...updated,
@@ -961,13 +961,22 @@ function App() {
                             }}
                           />
                           <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Atual</span>
-                          <input 
-                            type="number" 
-                            className="input-field" 
-                            style={{ padding: '4px 8px', fontSize: '12px', width: '70px', marginLeft: 'auto' }}
-                            value={activeChar.hp_max}
-                            onChange={(e) => updateActiveChar({ hp_max: Number(e.target.value) })}
-                          />
+                          <div 
+                            style={{ 
+                              padding: '4px 8px', 
+                              fontSize: '14px', 
+                              width: '70px', 
+                              marginLeft: 'auto',
+                              background: 'rgba(0,0,0,0.3)',
+                              border: '1px solid #333',
+                              borderRadius: '4px',
+                              textAlign: 'center',
+                              fontWeight: 'bold',
+                              color: '#ddd'
+                            }}
+                          >
+                            {activeChar.hp_max}
+                          </div>
                           <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
                         </div>
                       </div>
@@ -1001,13 +1010,22 @@ function App() {
                             }}
                           />
                           <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Atual</span>
-                          <input 
-                            type="number" 
-                            className="input-field" 
-                            style={{ padding: '4px 8px', fontSize: '12px', width: '70px', marginLeft: 'auto' }}
-                            value={activeChar.sp_max}
-                            onChange={(e) => updateActiveChar({ sp_max: Number(e.target.value) })}
-                          />
+                          <div 
+                            style={{ 
+                              padding: '4px 8px', 
+                              fontSize: '14px', 
+                              width: '70px', 
+                              marginLeft: 'auto',
+                              background: 'rgba(0,0,0,0.3)',
+                              border: '1px solid #333',
+                              borderRadius: '4px',
+                              textAlign: 'center',
+                              fontWeight: 'bold',
+                              color: '#ddd'
+                            }}
+                          >
+                            {activeChar.sp_max}
+                          </div>
                           <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
                         </div>
                       </div>
@@ -1041,13 +1059,22 @@ function App() {
                             }}
                           />
                           <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Atual</span>
-                          <input 
-                            type="number" 
-                            className="input-field" 
-                            style={{ padding: '4px 8px', fontSize: '12px', width: '70px', marginLeft: 'auto' }}
-                            value={activeChar.mp_max}
-                            onChange={(e) => updateActiveChar({ mp_max: Number(e.target.value) })}
-                          />
+                          <div 
+                            style={{ 
+                              padding: '4px 8px', 
+                              fontSize: '14px', 
+                              width: '70px', 
+                              marginLeft: 'auto',
+                              background: 'rgba(0,0,0,0.3)',
+                              border: '1px solid #333',
+                              borderRadius: '4px',
+                              textAlign: 'center',
+                              fontWeight: 'bold',
+                              color: '#ddd'
+                            }}
+                          >
+                            {activeChar.mp_max}
+                          </div>
                           <span style={{ alignSelf: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
                         </div>
                       </div>

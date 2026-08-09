@@ -120,9 +120,9 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
                 <div key={attr.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '5px' }}>
                   <strong style={{ width: '100px' }}>{attr.label}</strong>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <button className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => handleAttrChange(attr.key as any, -1)} disabled={attributes[attr.key as keyof typeof attributes] <= 0}>-</button>
+                    <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => handleAttrChange(attr.key as any, -1)} disabled={attributes[attr.key as keyof typeof attributes] <= 0}>-</button>
                     <span style={{ fontSize: '20px', fontWeight: 'bold', width: '20px', textAlign: 'center' }}>{attributes[attr.key as keyof typeof attributes]}</span>
-                    <button className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => handleAttrChange(attr.key as any, 1)} disabled={pointsLeft === 0 || attributes[attr.key as keyof typeof attributes] >= 3}>+</button>
+                    <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => handleAttrChange(attr.key as any, 1)} disabled={pointsLeft === 0 || attributes[attr.key as keyof typeof attributes] >= 3}>+</button>
                   </div>
                 </div>
               ))}
@@ -226,15 +226,15 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
         {/* Footer Navigation */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
           {step > 1 ? (
-            <button className="btn-primary" style={{ background: '#444' }} onClick={() => setStep(step - 1)}>Voltar</button>
+            <button type="button" className="btn-primary" style={{ background: '#444' }} onClick={() => setStep(step - 1)}>Voltar</button>
           ) : (
-            <button className="btn-primary" style={{ background: '#511' }} onClick={onClose}>Cancelar</button>
+            <button type="button" className="btn-primary" style={{ background: '#511' }} onClick={onClose}>Cancelar</button>
           )}
           
           {step < 4 ? (
-            <button className="btn-primary" onClick={() => setStep(step + 1)}>Próximo</button>
+            <button type="button" className="btn-primary" onClick={() => setStep(step + 1)}>Próximo</button>
           ) : (
-            <button className="btn-primary" style={{ background: 'var(--accent-gold)', color: '#000' }} onClick={handleFinish}>
+            <button type="button" className="btn-primary" style={{ background: 'var(--accent-gold)', color: '#000' }} onClick={handleFinish}>
               Finalizar Ficha
             </button>
           )}

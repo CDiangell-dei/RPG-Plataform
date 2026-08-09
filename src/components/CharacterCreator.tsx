@@ -15,22 +15,17 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
   const [attributes, setAttributes] = useState({
     agility: 1, intellect: 1, vigor: 1, presence: 1, strength: 1
   });
-  const maxPoints = 4;
-  
   const getUsedPoints = () => {
     return Object.values(attributes).reduce((sum, val) => sum + (val - 1), 0);
   };
-  const pointsLeft = maxPoints - getUsedPoints();
+  const usedPoints = getUsedPoints();
 
   const handleAttrChange = (attr: keyof typeof attributes, change: number) => {
     const current = attributes[attr];
     const next = current + change;
     
-    // Limits: Min 0, Max 3 during creation. 
-    if (next < 0 || next > 3) return;
-    
-    const cost = change;
-    if (pointsLeft - cost < 0) return; // not enough points
+    // Limits: Min 0. No maximum limit.
+    if (next < 0) return;
     
     setAttributes({ ...attributes, [attr]: next });
   };
@@ -127,9 +122,9 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
         return (
           <div className="wizard-step animation-fade-in">
             <h3 style={{ color: 'var(--accent-gold)' }}>Passo 2: Atributos</h3>
-            <p style={{ fontSize: '14px', marginBottom: '10px' }}>Distribua {maxPoints} pontos entre os 5 atributos. Todos começam em 1 (máximo 3).</p>
-            <div style={{ textAlign: 'center', marginBottom: '20px', fontWeight: 'bold', color: pointsLeft > 0 ? '#3f3' : '#f33' }}>
-              Pontos Restantes: {pointsLeft}
+            <p style={{ fontSize: '14px', marginBottom: '10px' }}>O mestre liberou! Distribua livremente de acordo com a lore do seu personagem (o padrão do sistema seriam 4 pontos extras).</p>
+            <div style={{ textAlign: 'center', marginBottom: '20px', fontWeight: 'bold', color: '#ff8' }}>
+              Pontos Adicionais Gastos: {usedPoints}
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -145,7 +140,7 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                     <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => handleAttrChange(attr.key as any, -1)} disabled={attributes[attr.key as keyof typeof attributes] <= 0}>-</button>
                     <span style={{ fontSize: '20px', fontWeight: 'bold', width: '20px', textAlign: 'center' }}>{attributes[attr.key as keyof typeof attributes]}</span>
-                    <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => handleAttrChange(attr.key as any, 1)} disabled={pointsLeft === 0 || attributes[attr.key as keyof typeof attributes] >= 3}>+</button>
+                    <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => handleAttrChange(attr.key as any, 1)}>+</button>
                   </div>
                 </div>
               ))}

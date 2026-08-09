@@ -335,37 +335,35 @@ function App() {
   // Update active character fields locally
   const updateActiveChar = (fields: Partial<Character>) => {
     if (!activeChar) return;
-    const updated = { ...activeChar, ...fields };
+    
+    let updated = { ...activeChar, ...fields };
+    
+    // Auto-calculate derived stats if relevant fields changed
+    if (fields.vigor !== undefined || fields.presence !== undefined || fields.level !== undefined || fields.class !== undefined) {
+      const classRules = CLASSES[updated.class];
+      if (classRules) {
+        const vigor = updated.vigor;
+        const presence = updated.presence;
+        const level = updated.level;
+        
+        // Em Ordem Paranormal, Vigor adiciona na vida base.
+        const newHpMax = classRules.hpBase + vigor + (level - 1) * classRules.hpPerLevel;
+        const newSpMax = classRules.spBase + (level - 1) * classRules.spPerLevel;
+        const newMpMax = classRules.mpBase + presence + (level - 1) * classRules.mpPerLevel;
+
+        updated = {
+          ...updated,
+          hp_max: newHpMax,
+          hp_current: updated.hp_current > newHpMax ? newHpMax : updated.hp_current,
+          sp_max: newSpMax,
+          sp_current: updated.sp_current > newSpMax ? newSpMax : updated.sp_current,
+          mp_max: newMpMax,
+          mp_current: updated.mp_current > newMpMax ? newMpMax : updated.mp_current,
+        };
+      }
+    }
+
     setActiveChar(updated);
-  };
-
-  // Autocalculate HP/SP/PE bases based on Class and Vigor
-  const applyClassAutoCalculations = () => {
-    if (!activeChar) return;
-    const classRules = CLASSES[activeChar.class];
-    if (!classRules) return;
-
-    // HP = base + vigor + (level - 1) * hpPerLevel
-    // SP = base + (level - 1) * spPerLevel
-    // PE = base + presence + (level - 1) * mpPerLevel
-    const newHpMax = classRules.hpBase + activeChar.vigor + (activeChar.level - 1) * classRules.hpPerLevel;
-    const newSpMax = classRules.spBase + (activeChar.level - 1) * classRules.spPerLevel;
-    const newMpMax = classRules.mpBase + activeChar.presence + (activeChar.level - 1) * classRules.mpPerLevel;
-
-    updateActiveChar({
-      hp_max: newHpMax,
-      hp_current: Math.min(activeChar.hp_current, newHpMax),
-      sp_max: newSpMax,
-      sp_current: Math.min(activeChar.sp_current, newSpMax),
-      mp_max: newMpMax,
-      mp_current: Math.min(activeChar.mp_current, newMpMax)
-    });
-
-    addLog(
-      activeChar.id, 
-      DICE_LOG_ACTIONS.STATUS_ALTERADO, 
-      `Recalculou status de Classe: Max HP = ${newHpMax}, Max SP = ${newSpMax}, Max PE = ${newMpMax}`
-    );
   };
 
   // Apply Origin Skill training
@@ -828,7 +826,6 @@ function App() {
                         onChange={(e) => {
                           const val = e.target.value;
                           updateActiveChar({ class: val });
-                          setTimeout(applyClassAutoCalculations, 100);
                         }}
                       >
                         {Object.keys(CLASSES).map(cls => (
@@ -848,7 +845,6 @@ function App() {
                           onChange={(e) => {
                             const val = Number(e.target.value);
                             updateActiveChar({ level: val });
-                            setTimeout(applyClassAutoCalculations, 100);
                           }}
                         />
                       </div>

@@ -73,7 +73,7 @@ interface DbLog {
 
 function App() {
   const [session, setSession] = useState<any>(null);
-  const [authUsername, setAuthUsername] = useState('');
+  const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -204,18 +204,16 @@ function App() {
     setAuthLoading(true);
     setAuthError(null);
 
-    const fakeEmail = `${authUsername.trim().toLowerCase().replace(/\s+/g, '')}@bellum.com`;
-
     try {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({
-          email: fakeEmail,
+          email: authEmail,
           password: authPassword
         });
         if (error) throw error;
       } else {
         const { error } = await supabase.auth.signInWithPassword({
-          email: fakeEmail,
+          email: authEmail,
           password: authPassword
         });
         if (error) throw error;
@@ -658,12 +656,13 @@ function App() {
             </h2>
             <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '5px', textAlign: 'left' }}>Nome de Usuário</label>
+                <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '5px', textAlign: 'left' }}>E-mail</label>
                 <input 
-                  type="text" 
+                  type="email" 
                   className="input-field" 
-                  value={authUsername} 
-                  onChange={(e) => setAuthUsername(e.target.value)} 
+                  placeholder="E-mail"
+                  value={authEmail} 
+                  onChange={(e) => setAuthEmail(e.target.value)} 
                   required 
                 />
               </div>

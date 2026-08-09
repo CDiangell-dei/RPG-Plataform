@@ -78,6 +78,8 @@ function App() {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
+  const [recoveryPassword, setRecoveryPassword] = useState('');
 
   const [characters, setCharacters] = useState<Character[]>([]);
   const [activeChar, setActiveChar] = useState<Character | null>(null);
@@ -111,8 +113,11 @@ function App() {
       setSession(session);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecoveringPassword(true);
+      }
       if (!session) {
         setCharacters([]);
         setActiveChar(null);
@@ -242,6 +247,23 @@ function App() {
       alert('Se o e-mail existir, um link de recuperação foi enviado para sua caixa de entrada!');
     } catch (err: any) {
       setAuthError(err.message || 'Erro ao enviar e-mail de recuperação.');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    setAuthError(null);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: recoveryPassword });
+      if (error) throw error;
+      alert('Senha atualizada com sucesso!');
+      setIsRecoveringPassword(false);
+      setRecoveryPassword('');
+    } catch (err: any) {
+      setAuthError(err.message || 'Erro ao atualizar a senha.');
     } finally {
       setAuthLoading(false);
     }
@@ -666,14 +688,49 @@ function App() {
       )}
 
       {/* AUTH VIEW */}
-      {!session ? (
+      {!session || isRecoveringPassword ? (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1, padding: '40px 0' }}>
           <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '30px', border: '1px solid var(--accent-gold)' }}>
-            <h2 style={{ textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center', color: 'var(--accent-gold)' }}>
-              {isSignUp ? 'Registrar na Seita' : 'Entrar no Egrégora'}
-            </h2>
-            <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <div>
+            
+            {isRecoveringPassword ? (
+              <>
+                <h2 style={{ textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center', color: 'var(--accent-gold)' }}>
+                  Redefinir Senha
+                </h2>
+                <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '5px', textAlign: 'left' }}>Nova Senha</label>
+                    <input 
+                      type="password" 
+                      className="input-field" 
+                      placeholder="Sua nova senha..."
+                      value={recoveryPassword} 
+                      onChange={(e) => setRecoveryPassword(e.target.value)} 
+                      required 
+                      minLength={6}
+                    />
+                  </div>
+                  {authError && <p style={{ color: '#ff4d4d', fontSize: '12px', textAlign: 'left' }}>{authError}</p>}
+                  <button type="submit" className="btn-primary" style={{ marginTop: '10px' }} disabled={authLoading}>
+                    {authLoading ? 'Salvando...' : 'Atualizar Senha'}
+                  </button>
+                  <p style={{ marginTop: '20px', fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>
+                    <span 
+                      style={{ color: 'var(--accent-gold)', cursor: 'pointer', textDecoration: 'underline' }}
+                      onClick={() => setIsRecoveringPassword(false)}
+                    >
+                      Voltar ao aplicativo
+                    </span>
+                  </p>
+                </form>
+              </>
+            ) : (
+              <>
+                <h2 style={{ textTransform: 'uppercase', marginBottom: '20px', textAlign: 'center', color: 'var(--accent-gold)' }}>
+                  {isSignUp ? 'Registrar na Seita' : 'Entrar no Egrégora'}
+                </h2>
+                <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  <div>
                 <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '5px', textAlign: 'left' }}>E-mail</label>
                 <input 
                   type="email" 
@@ -718,6 +775,8 @@ function App() {
                 {isSignUp ? 'Conecte-se' : 'Cadastre-se'}
               </span>
             </p>
+              </>
+            )}
           </div>
         </div>
       ) : (

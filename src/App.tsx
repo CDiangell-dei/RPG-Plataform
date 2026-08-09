@@ -950,6 +950,11 @@ function App() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '12px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.max(0, activeChar.hp_current - 5);
+                              updateActiveChar({ hp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `HP reduzido para ${val}.`);
+                            }}>-5</button>
                             <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
                               const val = Math.max(0, activeChar.hp_current - 1);
                               updateActiveChar({ hp_current: val });
@@ -963,6 +968,11 @@ function App() {
                               updateActiveChar({ hp_current: val });
                               addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `HP aumentado para ${val}.`);
                             }}>+</button>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '12px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.min(activeChar.hp_max, activeChar.hp_current + 5);
+                              updateActiveChar({ hp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `HP aumentado para ${val}.`);
+                            }}>+5</button>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
@@ -991,6 +1001,11 @@ function App() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '12px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.max(0, activeChar.sp_current - 5);
+                              updateActiveChar({ sp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `SP reduzido para ${val}.`);
+                            }}>-5</button>
                             <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
                               const val = Math.max(0, activeChar.sp_current - 1);
                               updateActiveChar({ sp_current: val });
@@ -1004,6 +1019,11 @@ function App() {
                               updateActiveChar({ sp_current: val });
                               addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `SP aumentado para ${val}.`);
                             }}>+</button>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '12px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.min(activeChar.sp_max, activeChar.sp_current + 5);
+                              updateActiveChar({ sp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `SP aumentado para ${val}.`);
+                            }}>+5</button>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>
@@ -1032,6 +1052,11 @@ function App() {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '12px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.max(0, activeChar.mp_current - 5);
+                              updateActiveChar({ mp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `PE reduzido para ${val}.`);
+                            }}>-5</button>
                             <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '14px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
                               const val = Math.max(0, activeChar.mp_current - 1);
                               updateActiveChar({ mp_current: val });
@@ -1045,6 +1070,11 @@ function App() {
                               updateActiveChar({ mp_current: val });
                               addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `PE aumentado para ${val}.`);
                             }}>+</button>
+                            <button type="button" className="btn-primary" style={{ padding: '2px 8px', fontSize: '12px', background: 'rgba(0,0,0,0.5)' }} onClick={() => {
+                              const val = Math.min(activeChar.mp_max, activeChar.mp_current + 5);
+                              updateActiveChar({ mp_current: val });
+                              addLog(activeChar.id, DICE_LOG_ACTIONS.STATUS_ALTERADO, `PE aumentado para ${val}.`);
+                            }}>+5</button>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Máx</span>

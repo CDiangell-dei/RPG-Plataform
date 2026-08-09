@@ -35,9 +35,7 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
 
   const toggleOrigin = (key: string) => {
     if (origins.includes(key)) {
-      if (origins.length > 1) { 
-        setOrigins(origins.filter(o => o !== key));
-      }
+      setOrigins(origins.filter(o => o !== key));
     } else {
       if (origins.length < 3) {
         setOrigins([...origins, key]);

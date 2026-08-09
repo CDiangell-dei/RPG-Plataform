@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from './lib/supabaseClient';
 import { 
   ATTRIBUTES, 
@@ -81,6 +81,7 @@ function App() {
 
   const [characters, setCharacters] = useState<Character[]>([]);
   const [activeChar, setActiveChar] = useState<Character | null>(null);
+  const autoSaveTimerRef = useRef<any>(null);
   const [loadingChars, setLoadingChars] = useState(false);
   const [savingChar, setSavingChar] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -102,6 +103,7 @@ function App() {
 
   // Compendium open state
   const [compendiumOpen, setCompendiumOpen] = useState(false);
+  const [isEditingAttributes, setIsEditingAttributes] = useState(false);
 
   // Auth state listener
   useEffect(() => {
@@ -285,7 +287,7 @@ function App() {
   };
 
   // Save character
-  const saveCharacter = async (charToSave: Character) => {
+  const saveCharacter = async (charToSave: Character, isAutoSave: boolean = false) => {
     setSavingChar(true);
     setSaveMessage(null);
     try {
@@ -321,8 +323,10 @@ function App() {
         .eq('id', charToSave.id);
 
       if (error) throw error;
-      setSaveMessage('Ficha salva nas brumas do Supabase!');
-      setTimeout(() => setSaveMessage(null), 3000);
+      if (!isAutoSave) {
+        setSaveMessage('Ficha salva nas brumas do Supabase!');
+        setTimeout(() => setSaveMessage(null), 3000);
+      }
       fetchCharacters();
     } catch (err: any) {
       console.error('Erro ao salvar ficha:', err.message);
@@ -364,6 +368,11 @@ function App() {
     }
 
     setActiveChar(updated);
+
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => {
+      saveCharacter(updated, true);
+    }, 2000);
   };
 
   // Apply Origin Skill training
@@ -741,6 +750,40 @@ function App() {
             />
           )}
 
+          {isEditingAttributes && activeChar && (
+            <div style={{
+              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(0,0,0,0.85)',
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              zIndex: 9999, backdropFilter: 'blur(5px)'
+            }}>
+              <div className="glass-panel" style={{ width: '400px', maxWidth: '90vw', padding: '30px' }}>
+                <h3 style={{ color: 'var(--accent-gold)', marginBottom: '20px' }}>Editar Atributos</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {[
+                    { key: 'agility', label: 'Agilidade' },
+                    { key: 'intellect', label: 'Intelecto' },
+                    { key: 'vigor', label: 'Vigor' },
+                    { key: 'presence', label: 'Presença' },
+                    { key: 'strength', label: 'Força' }
+                  ].map(attr => (
+                    <div key={attr.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '5px' }}>
+                      <strong>{attr.label}</strong>
+                      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                        <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => updateActiveChar({ [attr.key]: Math.max(0, (activeChar[attr.key as keyof Character] as number) - 1) })}>-</button>
+                        <span style={{ fontSize: '20px', fontWeight: 'bold', width: '20px', textAlign: 'center' }}>{activeChar[attr.key as keyof Character] as number}</span>
+                        <button type="button" className="btn-primary" style={{ padding: '5px 15px' }} onClick={() => updateActiveChar({ [attr.key]: Math.min(10, (activeChar[attr.key as keyof Character] as number) + 1) })}>+</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: '30px', textAlign: 'right' }}>
+                  <button type="button" className="btn-primary" onClick={() => setIsEditingAttributes(false)}>Fechar</button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* MAIN COLUMN SYSTEM */}
           <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '20px', alignItems: 'start' }}>
             
@@ -869,9 +912,12 @@ function App() {
                   
                   {/* ATTRIBUTES HEX PANEL */}
                   <div className="glass-panel" style={{ padding: '20px', minHeight: '275px' }}>
-                    <h3 style={{ textTransform: 'uppercase', fontSize: '13px', color: 'var(--accent-gold)', marginBottom: '20px', borderBottom: '1px solid var(--border-muted)', paddingBottom: '5px', textAlign: 'left' }}>
-                      Atributos de Ordem Paranormal
-                    </h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-muted)', paddingBottom: '5px' }}>
+                      <h3 style={{ textTransform: 'uppercase', fontSize: '13px', color: 'var(--accent-gold)', margin: 0 }}>
+                        Atributos de Ordem Paranormal
+                      </h3>
+                      <button type="button" className="btn-primary" style={{ padding: '2px 10px', fontSize: '11px' }} onClick={() => setIsEditingAttributes(true)}>Editar</button>
+                    </div>
                     
                     <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: '20px', padding: '10px 0' }}>
                       {Object.entries(ATTRIBUTES).map(([key, attr]) => (
@@ -890,28 +936,10 @@ function App() {
                           <span style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: 'bold', display: 'block', marginBottom: '2px', fontFamily: 'var(--font-gothic)' }}>
                             {attr.short}
                           </span>
-                          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', margin: '4px 0' }}>
-                            <button 
-                              style={{ background: 'transparent', border: 'none', color: 'var(--accent-gold)', fontSize: '12px', cursor: 'pointer' }}
-                              onClick={() => {
-                                const curr = activeChar[key as keyof Character] as number;
-                                updateActiveChar({ [key]: Math.max(0, curr - 1) });
-                              }}
-                            >
-                              -
-                            </button>
-                            <span style={{ fontSize: '24px', fontWeight: 'bold', fontFamily: 'var(--font-gothic)', color: 'var(--text-primary)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '4px 0' }}>
+                            <span style={{ fontSize: '28px', fontWeight: 'bold', fontFamily: 'var(--font-gothic)', color: 'var(--text-primary)' }}>
                               {activeChar[key as keyof Character] as number}
                             </span>
-                            <button 
-                              style={{ background: 'transparent', border: 'none', color: 'var(--accent-gold)', fontSize: '12px', cursor: 'pointer' }}
-                              onClick={() => {
-                                const curr = activeChar[key as keyof Character] as number;
-                                updateActiveChar({ [key]: Math.min(5, curr + 1) });
-                              }}
-                            >
-                              +
-                            </button>
                           </div>
                           <button 
                             className="btn-primary" 

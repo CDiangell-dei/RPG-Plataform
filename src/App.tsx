@@ -3,7 +3,6 @@ import { supabase } from './lib/supabaseClient';
 import { 
   ATTRIBUTES, 
   SKILLS, 
-  ORIGINS, 
   CLASSES, 
   rollOrdemTest, 
   DICE_LOG_ACTIONS 
@@ -460,28 +459,6 @@ function App() {
     autoSaveTimerRef.current = setTimeout(() => {
       saveCharacter(updated, true);
     }, 2000);
-  };
-
-  // Apply Origin Skill training
-  const applyOriginTraining = () => {
-    if (!activeChar) return;
-    const originRules = ORIGINS[activeChar.origin];
-    if (!originRules) return;
-
-    const currentSkills = [...activeChar.skills];
-    originRules.skills.forEach(skillName => {
-      const idx = currentSkills.findIndex(s => s.name === skillName);
-      if (idx !== -1) {
-        currentSkills[idx].training = 'trained';
-      }
-    });
-
-    updateActiveChar({ skills: currentSkills });
-    addLog(
-      activeChar.id,
-      DICE_LOG_ACTIONS.STATUS_ALTERADO,
-      `Origem modificada para ${activeChar.origin}: Treinamento aplicado em ${originRules.skills.join(' e ')}.`
-    );
   };
 
   // Roll d20 Attribute roll
@@ -970,35 +947,23 @@ function App() {
                     </div>
                     <div style={{ textAlign: 'left' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '5px' }}>Origem</label>
-                      <select 
+                      <input 
+                        type="text"
                         className="input-field"
                         value={activeChar.origin}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          // Set origin, then apply trainings
-                          updateActiveChar({ origin: val });
-                          setTimeout(applyOriginTraining, 100);
-                        }}
-                      >
-                        {Object.keys(ORIGINS).map(origin => (
-                          <option key={origin} value={origin}>{origin}</option>
-                        ))}
-                      </select>
+                        readOnly
+                        disabled
+                      />
                     </div>
                     <div style={{ textAlign: 'left' }}>
                       <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '5px' }}>Classe</label>
-                      <select 
+                      <input 
+                        type="text"
                         className="input-field"
                         value={activeChar.class}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          updateActiveChar({ class: val });
-                        }}
-                      >
-                        {Object.keys(CLASSES).map(cls => (
-                          <option key={cls} value={cls}>{cls}</option>
-                        ))}
-                      </select>
+                        readOnly
+                        disabled
+                      />
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                       <div style={{ textAlign: 'left' }}>

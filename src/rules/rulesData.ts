@@ -235,9 +235,9 @@ export const ORIGINS: Record<string, Origin> = {
 };
 
 export const CLASSES: Record<string, ClassOption> = {
-  'Combatente': {
-    name: 'Combatente',
-    description: 'O braço armado da Seita. Focado em força, táticas e resistir aos golpes físicos do Flagelo.',
+  'Beligerante': {
+    name: 'Beligerante',
+    description: 'O braço armado da Seita (equivalente a Combatente em Ordem). Focado em força, táticas e resistir aos golpes físicos do Flagelo.',
     subclasses: ['Executor', 'Marechal de Ferro', 'Pugilista de Sangue', 'Espreitador de Guerra', 'Muralha Viva'],
     hpBase: 20,
     hpPerLevel: 4,
@@ -246,8 +246,8 @@ export const CLASSES: Record<string, ClassOption> = {
     mpBase: 3,
     mpPerLevel: 3
   },
-  'Especialista': {
-    name: 'Especialista',
+  'Artífice (Especialista)': {
+    name: 'Artífice (Especialista)',
     description: 'O artífice da sobrevivência. Focado em perícias, medicina, engenhosidade e táticas indiretas.',
     subclasses: ['Besteiro de Elite', 'Infiltrador de Guilda', 'Boticário de Campo', 'Diplomata das Coroas', 'Artífice de Guerra'],
     hpBase: 16,
@@ -257,8 +257,8 @@ export const CLASSES: Record<string, ClassOption> = {
     mpBase: 4,
     mpPerLevel: 4
   },
-  'Ocultista': {
-    name: 'Ocultista',
+  'Canalizador (Ocultista)': {
+    name: 'Canalizador (Ocultista)',
     description: 'O canalizador do paranormal. Conjura rituais do Egrégora sacrificando sua própria sanidade.',
     subclasses: ['Teurgo', 'Flagelado'],
     hpBase: 12,

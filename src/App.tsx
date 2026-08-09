@@ -11,6 +11,8 @@ import {
 import { WEAPONS, ARMORS } from './rules/itemsData';
 import { RITUALS } from './rules/ritualsData';
 import { POWERS } from './rules/powersData';
+import { CharacterCreator } from './components/CharacterCreator';
+
 // Types
 interface InventoryItem {
   id: string;
@@ -19,7 +21,7 @@ interface InventoryItem {
   desc: string;
 }
 
-interface SkillData {
+export interface SkillData {
   name: string;
   training: 'none' | 'trained' | 'veteran' | 'expert';
 }
@@ -32,7 +34,7 @@ interface RitualData {
   desc: string;
 }
 
-interface Character {
+export interface Character {
   id: string;
   user_id: string;
   name: string;
@@ -82,8 +84,9 @@ function App() {
   const [loadingChars, setLoadingChars] = useState(false);
   const [savingChar, setSavingChar] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [showCreator, setShowCreator] = useState(false);
 
-  // Dice roll state
+  // Tab state for right panelDice roll state
   const [rollResult, setRollResult] = useState<{
     title: string;
     rolls: number[];
@@ -226,47 +229,18 @@ function App() {
     await supabase.auth.signOut();
   };
 
-  // Create character
-  const createCharacter = async () => {
+  const createCharacter = () => {
+    setShowCreator(true);
+  };
+
+  const handleFinishCreator = async (newCharData: Partial<Character>) => {
     if (!session?.user) return;
     setLoadingChars(true);
+    setShowCreator(false);
     try {
-      // Default skills list populated with 'none'
-      const defaultSkills: SkillData[] = Object.keys(SKILLS).map(name => ({
-        name,
-        training: 'none'
-      }));
-
       const newChar = {
-        user_id: session.user.id,
-        name: 'Novo Agente Egrégora',
-        origin: 'Recruta Forçado',
-        class: 'Combatente',
-        level: 1,
-        nex: 5,
-        agility: 1,
-        intellect: 1,
-        vigor: 1,
-        presence: 1,
-        strength: 1,
-        hp_max: 20,
-        hp_current: 20,
-        sp_max: 12,
-        sp_current: 12,
-        mp_max: 3,
-        mp_current: 3,
-        cobre: 100,
-        prata: 0,
-        ouro: 0,
-        platina: 0,
-        platina_real: 0,
-        inventory: [
-          { id: '1', name: 'Rações de Viagem', spaces: 1, desc: 'Comida seca para viagem' },
-          { id: '2', name: 'Tocha', spaces: 1, desc: 'Dura 1 hora de iluminação' }
-        ],
-        skills: defaultSkills,
-        rituals: [],
-        notes: 'Sua jornada em Bellum Egrégora começa aqui.'
+        ...newCharData,
+        user_id: session.user.id
       };
 
       const { data, error } = await supabase
@@ -283,10 +257,12 @@ function App() {
       }
     } catch (err: any) {
       console.error('Erro ao forjar personagem:', err.message);
+      alert('Erro ao forjar personagem.');
     } finally {
       setLoadingChars(false);
     }
   };
+
   // Delete character
   const deleteCharacter = async (charId: string) => {
     if (!window.confirm('Tem certeza que deseja APAGAR esta ficha para sempre? Esta ação não pode ser desfeita.')) return;
@@ -758,6 +734,13 @@ function App() {
             <div className="glass-panel" style={{ padding: '10px', textAlign: 'center', color: 'var(--accent-gold)', borderColor: 'var(--accent-gold)', fontWeight: 'bold', animation: 'scaleIn 0.3s' }}>
               {saveMessage}
             </div>
+          )}
+
+          {showCreator && (
+            <CharacterCreator 
+              onClose={() => setShowCreator(false)} 
+              onFinish={handleFinishCreator} 
+            />
           )}
 
           {/* MAIN COLUMN SYSTEM */}

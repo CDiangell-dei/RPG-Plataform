@@ -35,8 +35,22 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
     setAttributes({ ...attributes, [attr]: next });
   };
 
-  // Origem
-  const [origin, setOrigin] = useState(Object.keys(ORIGINS)[0]);
+  // Origem (Max 3 para homebrew)
+  const [origins, setOrigins] = useState<string[]>([Object.keys(ORIGINS)[0]]);
+
+  const toggleOrigin = (key: string) => {
+    if (origins.includes(key)) {
+      if (origins.length > 1) { 
+        setOrigins(origins.filter(o => o !== key));
+      }
+    } else {
+      if (origins.length < 3) {
+        setOrigins([...origins, key]);
+      } else {
+        alert('O seu mestre permitiu no máximo 3 origens combinadas!');
+      }
+    }
+  };
   
   // Classe (Caminho)
   const [charClass, setCharClass] = useState('Beligerante'); 
@@ -52,17 +66,26 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
       training: 'none'
     }));
 
-    const selectedOrigin = ORIGINS[origin];
-    if (selectedOrigin) {
-      selectedOrigin.skills.forEach(s => {
-        const skill = defaultSkills.find(ds => ds.name === s);
-        if (skill) skill.training = 'trained';
-      });
-    }
+    let combinedNotes = 'História de Vida (Origens Múltiplas):\n';
+    let combinedOriginNames: string[] = [];
+
+    origins.forEach(origKey => {
+      const selectedOrigin = ORIGINS[origKey];
+      if (selectedOrigin) {
+        combinedOriginNames.push(selectedOrigin.name);
+        
+        selectedOrigin.skills.forEach(s => {
+          const skill = defaultSkills.find(ds => ds.name === s);
+          if (skill) skill.training = 'trained';
+        });
+
+        combinedNotes += `- [${selectedOrigin.name}]: ${selectedOrigin.benefitName} - ${selectedOrigin.benefitDescription}\n`;
+      }
+    });
 
     const newChar: Partial<Character> = {
       name: name || 'Agente Desconhecido',
-      origin: origin,
+      origin: combinedOriginNames.join(' / '),
       class: charClass,
       level: 1,
       nex: 5,
@@ -77,7 +100,7 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
       inventory: [],
       skills: defaultSkills,
       rituals: [],
-      notes: `Origem: ${selectedOrigin?.name}\nPoder: ${selectedOrigin?.benefitName} - ${selectedOrigin?.benefitDescription}`
+      notes: combinedNotes.trim()
     };
 
     onFinish(newChar);
@@ -133,20 +156,20 @@ export function CharacterCreator({ onClose, onFinish }: CharacterCreatorProps) {
         return (
           <div className="wizard-step animation-fade-in">
             <h3 style={{ color: 'var(--accent-gold)' }}>Passo 3: Origem</h3>
-            <p style={{ fontSize: '14px', marginBottom: '15px' }}>O que você fazia antes do Bellum engolir o mundo?</p>
+            <p style={{ fontSize: '14px', marginBottom: '15px' }}>O que você fazia antes do Bellum engolir o mundo? (Você pode escolher até 3)</p>
             <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '10px' }}>
               {Object.keys(ORIGINS).map(key => {
                 const o = ORIGINS[key];
                 return (
                   <div 
                     key={key} 
-                    onClick={() => setOrigin(key)}
+                    onClick={() => toggleOrigin(key)}
                     style={{ 
                       padding: '12px', 
-                      border: origin === key ? '2px solid var(--accent-gold)' : '1px solid #333',
+                      border: origins.includes(key) ? '2px solid var(--accent-gold)' : '1px solid #333',
                       borderRadius: '5px',
                       cursor: 'pointer',
-                      background: origin === key ? 'rgba(218, 165, 32, 0.1)' : 'rgba(0,0,0,0.4)',
+                      background: origins.includes(key) ? 'rgba(218, 165, 32, 0.1)' : 'rgba(0,0,0,0.4)',
                       transition: 'all 0.2s'
                     }}
                   >
